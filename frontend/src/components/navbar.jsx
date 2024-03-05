@@ -1,10 +1,10 @@
 import { BookOpen, ListPlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { userAtom } from "../store/atoms";
 
 export const Navbar = ({ type, openConversation, setOpenConversation }) => {
-  const [user, setUser] = useRecoilValue(userAtom);
+  const [user, setUser] = useRecoilState(userAtom);
 
   if (type == "chat") {
     return (
