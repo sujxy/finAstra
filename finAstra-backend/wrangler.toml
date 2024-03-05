@@ -1,0 +1,21 @@
+name = "finastra-backend"
+compatibility_date = "2023-12-01"
+
+[vars]
+DATABASE_URL = "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNDEyZjA4MjAtYjFjZi00NWE2LWE3NjEtNDY0MDI5ZjZhZjdmIiwidGVuYW50X2lkIjoiZDQ1ZDE4NGFiOTE2YWIwYzExMGQ4OGIwZDg2NTJiZDdmY2QzYjk5YmUxOGVhOTk4NGRkYzgzNGE5YTMwZWRhZSIsImludGVybmFsX3NlY3JldCI6IjFmMWMwZmMzLWM0M2QtNDJmMS04NzI5LWQzOWVmN2FiNDdhOSJ9.dtE5PlJzPoYFOnDT3vNBvNSgdItVokHbTaO4zVlVF2g"
+OPENAI_API_KEY = "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"
+JWT_SECRET = "iU1fd0eEADi7i4Ks8fRm6fGzr9YvMvZcKvRb0qBx8aWnOjXr1o"
+# MY_VARIABLE = "production_value"
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = ""
