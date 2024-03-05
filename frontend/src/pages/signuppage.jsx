@@ -26,7 +26,7 @@ export const SignUpPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-screen items-center justify-center">
+    <div className="flex min-h-screen w-screen flex-wrap items-center justify-center sm:flex-nowrap">
       <div className="center-div min-h-screen w-1/2 bg-white">
         <div className="flex w-1/3 flex-col items-center justify-center  rounded-lg border px-3 py-2">
           <h1 className="font-poppins mb-2 text-2xl font-semibold">Sign Up</h1>
