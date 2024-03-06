@@ -71,7 +71,7 @@ chatRouter.post("/new", async (c) => {
   }
 });
 
-chatRouter.get("/delete", async (c) => {
+chatRouter.delete("/delete", async (c) => {
   try {
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
@@ -89,8 +89,10 @@ chatRouter.get("/delete", async (c) => {
       where: { chatId },
     });
 
+    const chats = await prisma.chat.findMany();
+
     c.status(200);
-    return c.json({ message: "chat deleted !" });
+    return c.json({ message: chats });
   } catch (e: any) {
     c.status(500);
     return c.json({ error: e.message });

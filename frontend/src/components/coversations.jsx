@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { chatAtom, chatSelector, userAtom } from "../store/atoms";
+import { Trash2 } from "lucide-react";
 import {
   useRecoilState,
   useRecoilStateLoadable,
@@ -9,16 +10,34 @@ import {
 import axios from "axios";
 import { useState } from "react";
 
-const Chat = ({ chatId, title }) => {
+const Chat = ({ chatId, title, setChats }) => {
   const [currentChat, setCurrentChat] = useRecoilState(chatAtom);
+  const [active, setActive] = useState(false);
+
+  const handleDelete = async () => {
+    const { data } = await axios.delete(`/chat/delete?chatId=${chatId}`);
+    if (data.message) {
+      setChats(data.message);
+    }
+  };
 
   return (
-    <h1
-      onClick={() => setCurrentChat(chatId)}
-      className={`w-full truncate rounded-md px-2 py-1 text-left text-sm font-light ${currentChat == chatId ? "bg-gray-200 font-medium" : null} `}
+    <div
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      className={`flex w-full items-center justify-between truncate rounded-md px-2 py-1 text-left text-sm font-light ${currentChat == chatId ? "bg-gray-200 font-medium" : null} `}
     >
-      {title}
-    </h1>
+      <h1 onClick={() => setCurrentChat(chatId)} className="truncate">
+        {title}
+      </h1>
+      {active && (
+        <Trash2
+          onClick={handleDelete}
+          className="hover:text-red-500"
+          size={14}
+        />
+      )}
+    </div>
   );
 };
 
@@ -26,18 +45,18 @@ export const Conversations = () => {
   const userId = useRecoilValue(userAtom);
   const setChatId = useSetRecoilState(chatAtom);
 
-  const [chats, setChats] = useRecoilStateLoadable(chatSelector);
+  const [chats, setChats] = useState([]);
   const [chatTitle, setChatTitle] = useState("");
 
-  // useEffect(() => {
-  //   const getUserChats = async () => {
-  //     const { data } = await axios.get(`/chat/bulk`);
-  //     if (data.message) {
-  //       setChats(data.message);
-  //     }
-  //   };
-  //   getUserChats();
-  // }, [userId]);
+  useEffect(() => {
+    const getUserChats = async () => {
+      const { data } = await axios.get(`/chat/bulk`);
+      if (data.message) {
+        setChats(data.message);
+      }
+    };
+    getUserChats();
+  }, [userId]);
 
   const createNewChat = async () => {
     if (chatTitle == "") return;
@@ -73,11 +92,16 @@ export const Conversations = () => {
           <h1>+</h1>
         </button>{" "}
       </div>
-      {chats.state == "hasValue" &&
-        chats.contents?.map((chat, i) => (
-          <Chat key={i} chatId={chat.chatId} title={chat.title} />
-        ))}
-      {chats.state == "loading" && "Loading..."}
+      {chats
+        ? chats.map((chat, i) => (
+            <Chat
+              key={i}
+              chatId={chat.chatId}
+              title={chat.title}
+              setChats={setChats}
+            />
+          ))
+        : "Loading..."}
     </div>
   );
 };
