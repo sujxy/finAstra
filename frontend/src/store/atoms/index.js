@@ -11,6 +11,11 @@ export const chatAtom = atom({
   default: "",
 });
 
+export const referencesAtom = atom({
+  key: "referencesAtom",
+  default: [],
+});
+
 export const chatSelector = selector({
   key: "allChatAtom",
   get: async ({ get }) => {

@@ -3,13 +3,19 @@ import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { userAtom } from "../store/atoms";
 
-export const Navbar = ({ type, openConversation, setOpenConversation }) => {
+export const Navbar = ({
+  type,
+  openConversation,
+  setOpenConversation,
+  setOpenRefer,
+  openRefer,
+}) => {
   const [user, setUser] = useRecoilState(userAtom);
 
   if (type == "chat") {
     return (
       <div
-        className="font-poppins  absolute z-10  flex  w-full items-center
+        className="font-poppins fixed top-0  z-10  flex  w-full items-center
   justify-between  rounded-b-2xl bg-white/30 px-16  py-4  text-black shadow backdrop-blur-lg"
       >
         <button
@@ -27,8 +33,8 @@ export const Navbar = ({ type, openConversation, setOpenConversation }) => {
           <span className="font-yeseva  text-4xl  ">Astra</span>
         </Link>
         <button
-          // onClick={() => setOpenConversation((prev) => !prev)}
-          className={`text-lg font-light hover:underline ${0 && openConversation && "text-green font-medium"}`}
+          onClick={() => setOpenRefer((prev) => !prev)}
+          className={`text-lg font-light hover:underline ${openRefer && "text-green font-medium"}`}
         >
           <span className="hidden sm:inline ">References</span>
           <span className="sm:hidden">
@@ -43,7 +49,7 @@ export const Navbar = ({ type, openConversation, setOpenConversation }) => {
   return (
     <div
       className="font-poppins  absolute z-10  flex  w-full items-center
-    justify-between   bg-transparent px-16  py-4  text-white  "
+    justify-between   bg-transparent px-8 py-4  text-white  sm:px-16  "
     >
       <Link to="/">
         <span className="font-poppins text-4xl font-light text-opacity-0  ">
@@ -52,12 +58,12 @@ export const Navbar = ({ type, openConversation, setOpenConversation }) => {
         <span className="font-yeseva  text-4xl  ">Astra</span>
       </Link>
       <div className="flex gap-6 text-sm sm:text-lg">
-        <Link to="/signup" className="outline-btn ">
+        <Link to="/signup" className="hover:underline ">
           Register
         </Link>
 
         {!user ? (
-          <Link to="/signin" className="outline-btn ">
+          <Link to="/signin" className="hover:underline ">
             Login
           </Link>
         ) : (
@@ -67,13 +73,13 @@ export const Navbar = ({ type, openConversation, setOpenConversation }) => {
               localStorage.removeItem("token");
             }}
             to="/signin"
-            className="outline-btn "
+            className="hover:underline "
           >
             Logout
           </button>
         )}
 
-        <Link to={`${user ? "/chat" : "/signin"}`} className="outline-btn ">
+        <Link to={`${user ? "/chat" : "/signin"}`} className="hover:underline ">
           Chat
         </Link>
       </div>

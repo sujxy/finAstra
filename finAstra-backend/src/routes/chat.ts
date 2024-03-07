@@ -5,9 +5,10 @@ import { Hono } from "hono";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAI } from "langchain/llms/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { RetrievalQAChain } from "langchain/chains";
+import { RetrievalQAChain, loadQAStuffChain } from "langchain/chains";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
+import { rag_prompt } from "../prompts/index";
 
 import { verify } from "hono/utils/jwt/jwt";
 
@@ -20,11 +21,15 @@ const chatRouter = new Hono<{
   Variables: {
     prisma: PrismaClient;
     userId: string;
+    credits: number;
   };
 }>();
 
 chatRouter.use("/*", async (c, next) => {
   const tokenHeader = c.req.header("Authorization");
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
   if (!tokenHeader) {
     c.status(411);
     return c.json({ error: "authorization error !" });
@@ -40,7 +45,11 @@ chatRouter.use("/*", async (c, next) => {
     c.status(401);
     return c.json({ error: "invalid token !" });
   }
+  const user = await prisma.user.findUnique({
+    where: { userId: tokenData.userId },
+  });
   c.set("userId", tokenData.userId);
+  c.set("credits", user?.credits || 0);
   await next();
 });
 
@@ -143,6 +152,9 @@ chatRouter.get("/messages", async (c) => {
 
 chatRouter.post("/question/:chatId", async (c) => {
   try {
+    const userId = c.get("userId");
+    const credits = c.get("credits");
+    console.log(credits);
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
@@ -165,8 +177,27 @@ chatRouter.post("/question/:chatId", async (c) => {
     );
     const retriever = store.asRetriever();
     const model = new OpenAI({ openAIApiKey: c.env.OPENAI_API_KEY });
-    const chain = RetrievalQAChain.fromLLM(model, retriever);
-
+    const chain = new RetrievalQAChain({
+      combineDocumentsChain: loadQAStuffChain(model, { prompt: rag_prompt }),
+      retriever: retriever,
+      returnSourceDocuments: true,
+    });
+    //check credits
+    if (credits <= 0)
+      return c.json({ error: "Your credits have expired ,only 10 per user!" });
+    //context create
+    const res = await chain.call({
+      query: body.question,
+    });
+    userId != "a238c7bb-fc3b-4dbd-8995-7ab4a23bbf3f" &&
+      prisma.user.update({
+        where: {
+          userId: userId,
+        },
+        data: {
+          credits: { decrement: 1 },
+        },
+      }); //we are decrementing credits except one user for testing purpose ! very naive approach
     const userMessage = await prisma.message.create({
       data: {
         content: body.question,
@@ -174,11 +205,6 @@ chatRouter.post("/question/:chatId", async (c) => {
         type: "Human",
       },
     });
-    //context create
-    const res = await chain.call({
-      query: body.question,
-    });
-
     const llmMessage = await prisma.message.create({
       data: {
         content: res.text,
@@ -188,7 +214,7 @@ chatRouter.post("/question/:chatId", async (c) => {
     });
 
     c.status(200);
-    return c.json({ message: res.text });
+    return c.json({ message: res });
   } catch (e: any) {
     c.status(500);
     return c.json({ error: e.message });

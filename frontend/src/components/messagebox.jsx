@@ -3,16 +3,26 @@ import { Message } from "./message";
 import axios from "axios";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { useRecoilState, useRecoilStateLoadable, useRecoilValue } from "recoil";
-import { chatAtom, messageAtom } from "../store/atoms";
+import {
+  useRecoilState,
+  useRecoilStateLoadable,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
+import { chatAtom, messageAtom, referencesAtom } from "../store/atoms";
 import { InputBar } from "./inputbar";
 import { BounceLoader, PropagateLoader } from "react-spinners";
 
 export const MessageBox = () => {
   const [humanMessage, setHumanMessage] = useState("");
   const [messages, setMessages] = useRecoilState(messageAtom);
+  const setReferences = useSetRecoilState(referencesAtom);
   const boxRef = useRef();
   const [loading, setLoading] = useState(false);
+  const [showError, setShowError] = useState({
+    message: " An error occured, Retry!",
+    state: false,
+  });
   const chatId = useRecoilValue(chatAtom);
 
   useEffect(() => {
@@ -54,9 +64,22 @@ export const MessageBox = () => {
       });
       if (data.message) {
         //handle update message
-        setMessages((prev) => [...prev, { content: data.message, type: "AI" }]);
+        setMessages((prev) => [
+          ...prev,
+          { content: data.message.text, type: "AI" },
+        ]);
+        setReferences(data.message.sourceDocuments);
+      } else {
+        throw Error(data.error);
       }
     } catch (e) {
+      setShowError({ message: e.message, state: true });
+      setTimeout(
+        () =>
+          setShowError({ message: " An error occured, Retry!", state: false }),
+        2000,
+      );
+      setMessages([...messages]);
       console.log(e);
     } finally {
       setLoading(false);
@@ -75,6 +98,11 @@ export const MessageBox = () => {
         <div className="flex w-full items-center justify-start gap-3 py-2 ps-5">
           <BounceLoader size={25} color="#0085ff" />
           <h1 className="text-base text-gray-500 ">Typing...</h1>
+        </div>
+      )}
+      {showError.state && (
+        <div className="center-div w-full bg-red-100 py-3 font-normal text-red-800">
+          {showError.message}
         </div>
       )}
 
