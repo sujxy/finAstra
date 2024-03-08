@@ -190,14 +190,14 @@ chatRouter.post("/question/:chatId", async (c) => {
       query: body.question,
     });
     userId != "a238c7bb-fc3b-4dbd-8995-7ab4a23bbf3f" &&
-      prisma.user.update({
+      (await prisma.user.update({
         where: {
           userId: userId,
         },
         data: {
           credits: { decrement: 1 },
         },
-      }); //we are decrementing credits except one user for testing purpose ! very naive approach
+      })); //we are decrementing credits except one user for testing purpose ! very naive approach
     const userMessage = await prisma.message.create({
       data: {
         content: body.question,
