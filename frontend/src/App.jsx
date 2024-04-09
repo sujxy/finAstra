@@ -10,7 +10,8 @@ import { userAtom } from "./store/atoms";
 
 function App() {
   const token = useRecoilValue(userAtom);
-  axios.defaults.baseURL = import.meta.env.BACKEND_URL;
+  axios.defaults.baseURL =
+    "https://finastra-backend.devsujay.workers.dev/api/v1";
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   return (
     <BrowserRouter>
