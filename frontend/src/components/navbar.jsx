@@ -30,7 +30,7 @@ export const Navbar = ({
         </button>
         <Link to="/">
           <span className="font-poppins text-4xl font-light   ">Fin</span>
-          <span className="font-yeseva  text-4xl  ">Astra</span>
+          <span className="font-yeseva  text-4xl  ">Astraa</span>
         </Link>
         <button
           onClick={() => setOpenRefer((prev) => !prev)}
@@ -55,7 +55,7 @@ export const Navbar = ({
         <span className="font-poppins text-4xl font-light text-opacity-0  ">
           Fin
         </span>
-        <span className="font-yeseva  text-4xl  ">Astra</span>
+        <span className="font-yeseva  text-4xl  ">Astraa</span>
       </Link>
       <div className="flex gap-6 text-sm sm:text-lg">
         <Link to="/signup" className="hover:underline ">
