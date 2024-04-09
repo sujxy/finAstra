@@ -3,7 +3,7 @@ import "./App.css";
 import { LandingPage } from "./pages/landing";
 import { ChatPage } from "./pages/chatpage";
 import axios from "axios";
-import { RecoilRoot, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { SignUpPage } from "./pages/signuppage";
 import { SignInPage } from "./pages/signin";
 import { userAtom } from "./store/atoms";
@@ -11,7 +11,7 @@ import { userAtom } from "./store/atoms";
 function App() {
   const token = useRecoilValue(userAtom);
   axios.defaults.baseURL =
-    "https://finastra-backend.devsujay.workers.dev/api/v1";
+    "https://finastra-backend.devsujay.workers.dev/api/v1"; //original url
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   return (
     <BrowserRouter>

@@ -15,7 +15,7 @@ export const Navbar = ({
   if (type == "chat") {
     return (
       <div
-        className="font-poppins fixed top-0  z-10  flex  w-full items-center
+        className="font-poppins fixed top-0  z-10  flex  w-screen items-center
   justify-between  rounded-b-2xl bg-white/30 px-16  py-4  text-black shadow backdrop-blur-lg"
       >
         <button

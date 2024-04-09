@@ -85,7 +85,7 @@ chatRouter.delete("/delete", async (c) => {
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
-
+    const userId = c.get("userId");
     const chatId = c.req.query("chatId");
 
     await prisma.message.deleteMany({
@@ -98,7 +98,11 @@ chatRouter.delete("/delete", async (c) => {
       where: { chatId },
     });
 
-    const chats = await prisma.chat.findMany();
+    const chats = await prisma.chat.findMany({
+      where: {
+        userId: userId,
+      },
+    });
 
     c.status(200);
     return c.json({ message: chats });
@@ -150,11 +154,87 @@ chatRouter.get("/messages", async (c) => {
   }
 });
 
+chatRouter.post("/question/new", async (c) => {
+  try {
+    const userId = c.get("userId");
+    const body = await c.req.json();
+    const credits = c.get("credits");
+
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const newChat = await prisma.chat.create({
+      data: {
+        userId: userId,
+        title: "New Chat",
+      },
+    });
+
+    const loader = new CheerioWebBaseLoader(
+      "https://www.rbi.org.in/scripts/NotificationUser.aspx?Id=12562&Mode=0#mainsection",
+    );
+    const docs = await loader.load();
+    const textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1000,
+      chunkOverlap: 200,
+    });
+    const split_docs = await textSplitter.splitDocuments(docs);
+    const store = await MemoryVectorStore.fromDocuments(
+      split_docs,
+      new OpenAIEmbeddings({ openAIApiKey: c.env.OPENAI_API_KEY }),
+    );
+    const retriever = store.asRetriever();
+    const model = new OpenAI({ openAIApiKey: c.env.OPENAI_API_KEY });
+    const chain = new RetrievalQAChain({
+      combineDocumentsChain: loadQAStuffChain(model, { prompt: rag_prompt }),
+      retriever: retriever,
+      returnSourceDocuments: true,
+    });
+    //check credits
+    if (credits <= 0)
+      return c.json({ error: "Your credits have expired ,only 10 per user!" });
+    //context create
+    const res = await chain.call({
+      query: body.question,
+    });
+    userId != "a238c7bb-fc3b-4dbd-8995-7ab4a23bbf3f" &&
+      (await prisma.user.update({
+        where: {
+          userId: userId,
+        },
+        data: {
+          credits: { decrement: 1 },
+        },
+      })); //we are decrementing credits except one user for testing purpose ! very naive approach
+    const userMessage = await prisma.message.create({
+      data: {
+        content: body.question,
+        chatId: newChat.chatId,
+        type: "Human",
+      },
+    });
+    const llmMessage = await prisma.message.create({
+      data: {
+        content: res.text,
+        chatId: newChat.chatId,
+        type: "AI",
+      },
+    });
+
+    c.status(200);
+    return c.json({ message: res, newChat: newChat.chatId });
+  } catch (e: any) {
+    c.status(500);
+    return c.json({ error: e.message });
+  }
+});
+
 chatRouter.post("/question/:chatId", async (c) => {
   try {
     const userId = c.get("userId");
     const credits = c.get("credits");
-    console.log(credits);
+
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());

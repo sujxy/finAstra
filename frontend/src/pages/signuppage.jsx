@@ -15,18 +15,27 @@ export const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
-    setLoading(true);
-    const { data } = await axios.post("/user/signup", {
-      username,
-      email,
-      password,
-    });
-    if (data.token) {
+    try {
+      setLoading(true);
+      const { data } = await axios.post("/user/signup", {
+        username,
+        email,
+        password,
+      });
+      if (data.token) {
+        navigate("/");
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      setError(true);
+      setTimeout(() => setError(false), 1500);
+    } finally {
       setLoading(false);
-      navigate("/");
     }
   };
 
@@ -59,12 +68,18 @@ export const SignUpPage = () => {
           ) : (
             <ActionButton text={"sign up"} onClick={handleSignup} />
           )}
-          <h3 className="mt-2 text-center text-sm ">
-            Already have an account?{" "}
-            <Link to="/signin" className="underline">
-              Sign up
-            </Link>
-          </h3>
+          {error ? (
+            <h3 className="mt-2 text-center text-sm w-full text-red-800 bg-red-50 p-1 rounded-md">
+              Error occured,Retry!
+            </h3>
+          ) : (
+            <h3 className="mt-2 text-center text-sm ">
+              Have an account?{" "}
+              <Link to="/signin" className="underline">
+                Sign up
+              </Link>
+            </h3>
+          )}
         </div>
       </div>
       <div className="futuristic-gradient from-primary to-green sm:center-div hidden  min-h-screen   w-1/2 ">

@@ -11,17 +11,26 @@ export const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const setToken = useSetRecoilState(userAtom);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setLoading(true);
-    const { data } = await axios.post("/user/signin", { email, password });
-    if (data.message) {
-      localStorage.setItem("token", data.token);
-      setToken(data.token);
+    try {
+      setLoading(true);
+      const { data } = await axios.post("/user/signin", { email, password });
+      if (data.message) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        navigate("/chat");
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      setError(true);
+      setTimeout(() => setError(false), 1500);
+    } finally {
       setLoading(false);
-      navigate("/chat");
     }
   };
 
@@ -49,12 +58,18 @@ export const SignInPage = () => {
             <ActionButton text={"sign in"} onClick={handleLogin} />
           )}
 
-          <h3 className="mt-2 text-center text-sm ">
-            Dont have an account?{" "}
-            <Link to="/signup" className="underline">
-              Sign up
-            </Link>
-          </h3>
+          {error ? (
+            <h3 className="mt-2 text-center text-sm w-full text-red-800 bg-red-50 p-1 rounded-md">
+              Error occured,Retry!
+            </h3>
+          ) : (
+            <h3 className="mt-2 text-center text-sm ">
+              Dont have an account?{" "}
+              <Link to="/signup" className="underline">
+                Sign up
+              </Link>
+            </h3>
+          )}
         </div>
       </div>
       <div className=" futuristic-gradient from-primary to-green sm:center-div hidden   min-h-screen w-1/2">

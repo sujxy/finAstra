@@ -31,7 +31,7 @@ const app = new Hono<{
 app.use(
   "/*",
   cors({
-    origin: "https://finastra.onrender.com",
+    origin: "https://finastra.onrender.com", //"http://localhost:5173"
     credentials: true,
   }),
 );

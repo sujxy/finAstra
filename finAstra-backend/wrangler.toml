@@ -2,7 +2,9 @@ name = "finastra-backend"
 compatibility_date = "2023-12-01"
 
 [vars]
-
+JWT_SECRET = "jwt secret"
+OPENAI_API_KEY = "api key"
+DATABASE_URL = "connection pool url"
 # MY_VARIABLE = "production_value"
 
 # [[kv_namespaces]]
