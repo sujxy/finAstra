@@ -22,7 +22,7 @@ const Chat = ({ chatId, title, setChats }) => {
     <div
       onMouseEnter={() => setActive(true)}
       onMouseLeave={() => setActive(false)}
-      className={`flex w-full items-center hover:border  justify-between truncate rounded-md px-2 py-1 text-left text-sm font-light ${currentChat == chatId ? "bg-gray-200 font-medium" : null} `}
+      className={`flex w-full items-center hover:bg-gray-50  border-b justify-between truncate  px-2 py-2 text-left text-sm font-light ${currentChat == chatId ? "bg-gray-200 font-medium" : null} `}
     >
       <h1
         onClick={() => setCurrentChat(chatId)}
@@ -77,7 +77,7 @@ export const Conversations = () => {
   return (
     <div
       className="h-[90vh] absolute overflow-y-scroll left-0 top-20 z-20 flex  w-full  flex-col items-center
-      gap-1  bg-white/30  p-1 px-2  backdrop-blur-lg  sm:w-1/5"
+        bg-white/30  p-1 px-2  backdrop-blur-lg  sm:w-1/5"
     >
       <div className="mb-2 flex w-full rounded-md border-2 px-1 py-1 ">
         <input
