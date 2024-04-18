@@ -17,9 +17,9 @@ export const LandingPage = () => {
     <div className="min-h-screen max-w-screen ">
       <Navbar />
       <div className="h-[100vh] relative bg-gradient-to-r futuristic-gradient  from-primary to-green  ">
-        <div className="center-div relative pt-12 sm:pt-0  min-h-[720px] w-screen flex-wrap sm:flex-nowrap ">
+        <div className="center-div relative pt-24 sm:pt-0  min-h-[720px] w-screen flex-wrap sm:flex-nowrap ">
           <div className=" flex w-full flex-col items-center sm:w-1/2">
-            <h1 className="font-poppins leading-14 w-full text-center text-3xl sm:text-5xl font-black text-white ps-4">
+            <h1 className="font-poppins leading-14 w-full text-center text-4xl sm:text-5xl font-black text-white ps-4">
               No need to remember those Finance{" "}
               <span className="font-normal"> jargons</span>
             </h1>
@@ -29,7 +29,7 @@ export const LandingPage = () => {
             </p>
             <button
               onClick={handleClick}
-              className="my-6  flex items-center gap-1 rounded-md border border-white bg-transparent px-4 py-2 text-lg text-white hover:bg-white hover:text-black"
+              className="my-2 sm:my-6  flex items-center gap-1 rounded-md border border-white bg-transparent px-4 py-2 text-lg text-white hover:bg-white hover:text-black"
             >
               <p>Get Started</p>
               <span>

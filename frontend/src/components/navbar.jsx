@@ -1,4 +1,11 @@
-import { BookOpen, ListPlus } from "lucide-react";
+import {
+  BookOpen,
+  ListPlus,
+  LogIn,
+  LogOut,
+  MessageSquareCode,
+  UserPlus,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { userAtom } from "../store/atoms";
@@ -58,13 +65,23 @@ export const Navbar = ({
         <span className="font-yeseva  text-4xl  ">Astraa</span>
       </Link>
       <div className="flex gap-6 text-sm sm:text-lg">
-        <Link to="/signup" className="hover:underline ">
-          Register
-        </Link>
+        {!user && (
+          <Link to="/signup" className="">
+            <span className="hidden sm:inline hover:underline  ">Register</span>
+            <span className="sm:hidden">
+              {" "}
+              <UserPlus />
+            </span>
+          </Link>
+        )}
 
         {!user ? (
           <Link to="/signin" className="hover:underline ">
-            Login
+            <span className="hidden sm:inline ">Sign in</span>
+            <span className="sm:hidden">
+              {" "}
+              <LogIn />
+            </span>
           </Link>
         ) : (
           <button
@@ -75,12 +92,20 @@ export const Navbar = ({
             to="/signin"
             className="hover:underline "
           >
-            Logout
+            <span className="hidden sm:inline ">Sign out</span>
+            <span className="sm:hidden">
+              {" "}
+              <LogOut />
+            </span>
           </button>
         )}
 
         <Link to={`${user ? "/chat" : "/signin"}`} className="hover:underline ">
-          Chat
+          <span className="hidden sm:inline ">Chat</span>
+          <span className="sm:hidden">
+            {" "}
+            <MessageSquareCode />
+          </span>
         </Link>
       </div>
     </div>
